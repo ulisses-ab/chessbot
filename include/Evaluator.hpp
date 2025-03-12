@@ -7,7 +7,7 @@ class Evaluator {
 public:
     Evaluator();
 
-    static double evaluate(GameState* gameState);
+    static double evaluate(GameState* state);
 };
 
 #endif

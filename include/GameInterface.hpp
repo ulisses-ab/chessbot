@@ -1,6 +1,6 @@
 #include "GameState.hpp"
 #include "Evaluator.hpp"
-#include "StateGenerator.hpp"
+#include "StateManager.hpp"
 #include <vector>
 
 #ifndef GAMEINTERFACE_H
@@ -8,10 +8,14 @@
 
 class GameInterface {
 public:
-    GameInterface(Evaluator* evaluator, StateGenerator* moveGenerator);
+    GameInterface(Evaluator* evaluator, StateManager* moveGenerator);
 
-    double evaluate(GameState* GameState);
-    std::vector<GameState*> generatePossibleNextStates(GameState* gameState);
+    double evaluateState(GameState* state);
+    bool isTerminalState(GameState* state);
+    std::vector<GameState*>* generatePossibleNextStates(GameState* state);
+private:
+    Evaluator* evaluator;
+    StateManager* StateManager;
 };
 
 #endif
