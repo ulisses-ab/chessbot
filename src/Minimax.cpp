@@ -2,30 +2,30 @@
 #include <vector>
 #include <float.h>
 
-const double Minimax::NAN = DBL_MAX;
-const double Minimax::INF = DBL_MAX / 2;
-
 Minimax::Minimax(GameInterface* gameInterface) {
     this->gameInterface = gameInterface;
 }
 
-GameState* Minimax::max(GameState* gameState, int depth) {
-    return this->max(gameState, depth, NAN, NAN);
+double Minimax::max(GameState* gameState, int depth) {
+    return this->max(gameState, depth, -DBL_MAX, DBL_MAX);
 }
 
-GameState* Minimax::min(GameState* gameState, int depth) {
-    return this->min(gameState, depth, NAN, NAN);
+double Minimax::min(GameState* gameState, int depth) {
+    return this->min(gameState, depth, -DBL_MAX, DBL_MAX);
 }
 
-GameState* Minimax::max(GameState* gameState, int depth, double alpha, double beta) {
-    
+double Minimax::max(GameState* gameState, int depth, double alpha, double beta) {
+    if(depth == 0) return this->gameInterface->evaluate(gameState);
+
     std::vector<GameState*> possibleNextStates = this->gameInterface->generatePossibleNextStates(gameState);
+
+    if(possibleNextStates.size() == 0) return this->gameInterface->evaluate(gameState); 
 
     for(auto possibleNextState : possibleNextStates) {
 
     }
 }
 
-GameState* Minimax::min(GameState* gameState, int depth, double alpha, double beta) {
+double Minimax::min(GameState* gameState, int depth, double alpha, double beta) {
 
 }
