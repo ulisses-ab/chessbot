@@ -9,13 +9,15 @@
 class GameInterface {
 public:
     GameInterface(Evaluator* evaluator, StateManager* moveGenerator);
+    virtual ~GameInterface();
 
     double evaluateState(GameState* state);
     bool isTerminalState(GameState* state);
     std::vector<GameState*>* generatePossibleNextStates(GameState* state);
+    GameState* getEmptyState();
 private:
     Evaluator* evaluator;
-    StateManager* StateManager;
+    StateManager* stateManager;
 };
 
 #endif

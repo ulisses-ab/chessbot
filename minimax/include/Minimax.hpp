@@ -7,6 +7,7 @@
 class Minimax {
 public:
     Minimax(GameInterface* gameInterface);
+    virtual ~Minimax();
 
     GameState* findMaximumNextState(GameState* state, int depth);
     GameState* findMinimumNextState(GameState* state, int depth);
