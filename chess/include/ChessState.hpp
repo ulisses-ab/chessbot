@@ -14,8 +14,8 @@ enum Pieces {
 
 struct ChessState : public GameState {
     bool whitesTurn;
-    long long unsigned int whites[5];
-    long long unsigned int blacks[5];
+    long long unsigned int whites[6];
+    long long unsigned int blacks[6];
 };
 
 #endif

@@ -2,6 +2,11 @@
 #include <algorithm>
 #include <iostream>
 
+ChessStateManager::ChessStateManager(GameState* state) {
+    ChessStateManager(static_cast<ChessState*>(state));
+}
+
+
 ChessStateManager::ChessStateManager(ChessState* state) {
     this->currentState = new ChessState();
     *this->currentState = *state;
@@ -15,32 +20,37 @@ ChessStateManager::~ChessStateManager() {
 }
 
 void ChessStateManager::flipEnemyPieces() {
-    if(this->whitesTurn()) {
-        this->flipWhitePieces();
+    this->flipEnemyPieces(this->currentState);
+}
+
+void ChessStateManager::flipEnemyPieces(ChessState* state) {
+    if(state->whitesTurn) {
+        this->flipBlackPieces(state);
     }
     else {
-        this->flipBlackPieces();
+        this->flipWhitePieces(state);
     }
 }
 
-void ChessStateManager::flipBlackPieces() {
-    for(auto& pieces : this->currentState->blacks) {
+void ChessStateManager::flipBlackPieces(ChessState* state) {
+    for(auto& pieces : state->blacks) {
         pieces = this->flipLongLongUnsigned(pieces);
     }
 }
 
-void ChessStateManager::flipWhitePieces() {
-    for(auto& pieces : this->currentState->whites) {
+void ChessStateManager::flipWhitePieces(ChessState* state) {
+    for(auto& pieces : state->whites) {
         pieces = this->flipLongLongUnsigned(pieces);
     }
 }
+
 
 long long unsigned int ChessStateManager::flipLongLongUnsigned(long long unsigned int n) {
     long long unsigned int temp = 0;
 
     for(int i = 0; i < 64; i++) {
-        if(n && (1 << i)) {
-            temp |= (1 << (63 - i));
+        if(n & (1llu << i)) {
+            temp |= (1llu << (63 - i));
         } 
     }
 
@@ -107,30 +117,218 @@ void ChessStateManager::generatePossibleMovesFromSpace(int space) {
 }
 
 void ChessStateManager::generatePawnMoves(int space) {
-    if(space + 8 < 64 && this->isEmpty(space + 8)) {
-        ChessState* newState = this->newStateWithMovedPiece(PAWN, space, space + 8);
-        this->possibleNextStates->push_back(newState);
+    if(this->isEmpty(space + 8)) {
+        this->pushbackNewStateWithMovedPiece(PAWN, space, space + 8);
+
+        if(this->row(space + 8) == 1 && this->isEmpty(space + 16)) {
+            this->pushbackNewStateWithMovedPiece(PAWN, space, space + 16);
+        }
+    }
+
+    if(this->column(space + 7) != 7 && this->hasEnemy(space + 7)) {
+        this->pushbackNewStateWithMovedPiece(PAWN, space, space + 7);
+    }
+
+    if(this->column(space + 9) != 0 && this->hasEnemy(space + 9)) {
+        this->pushbackNewStateWithMovedPiece(PAWN, space, space + 9);
     }
 }
 
 void ChessStateManager::generateKnightMoves(int space) {
+    if(this->column(space + 15) != 7 && !this->hasAlly(space + 15)) {
+        this->pushbackNewStateWithMovedPiece(KNIGHT, space, space + 15);
+    }
 
+    if(this->column(space + 17) != 0 && !this->hasAlly(space + 17)) {
+        this->pushbackNewStateWithMovedPiece(KNIGHT, space, space + 17);
+    }
+
+    if(this->column(space + 6) < 6 && !this->hasAlly(space + 6)) {
+        this->pushbackNewStateWithMovedPiece(KNIGHT, space, space + 6);
+    }
+
+    if(this->column(space + 10) > 1 && !this->hasAlly(space + 10)) {
+        this->pushbackNewStateWithMovedPiece(KNIGHT, space, space + 10);
+    }
+
+    if(this->column(space - 17) != 7 && !this->hasAlly(space - 17)) {
+        this->pushbackNewStateWithMovedPiece(KNIGHT, space, space - 17);
+    }
+
+    if(this->column(space - 15) != 0 && !this->hasAlly(space - 15)) {
+        this->pushbackNewStateWithMovedPiece(KNIGHT, space, space - 15);
+    }
+
+    if(this->column(space - 10) < 6 && !this->hasAlly(space - 10)) {
+        this->pushbackNewStateWithMovedPiece(KNIGHT, space, space - 10);
+    }
+
+    if(this->column(space - 6) > 1 && !this->hasAlly(space - 6)) {
+        this->pushbackNewStateWithMovedPiece(KNIGHT, space, space - 6);
+    }
 }
 
 void ChessStateManager::generateKingMoves(int space) {
+    if(this->column(space + 7) != 7 && !this->hasAlly(space + 7)) {
+        this->pushbackNewStateWithMovedPiece(KING, space, space + 7);
+    }
+    if(this->column(space - 1) != 7 && !this->hasAlly(space - 1)) {
+        this->pushbackNewStateWithMovedPiece(KING, space, space - 1);
+    }
+    if(this->column(space - 9) != 7 && !this->hasAlly(space - 9)) {
+        this->pushbackNewStateWithMovedPiece(KING, space, space - 9);
+    }
+    if(this->column(space + 9) != 0 && !this->hasAlly(space + 9)) {
+        this->pushbackNewStateWithMovedPiece(KING, space, space + 9);
+    }
+    if(this->column(space - 7) != 0 && !this->hasAlly(space - 7)) {
+        this->pushbackNewStateWithMovedPiece(KING, space, space - 7);
+    }
+    if(this->column(space + 1) != 0 && !this->hasAlly(space + 1)) {
+        this->pushbackNewStateWithMovedPiece(KING, space, space + 1);
+    }
+    if(!this->hasAlly(space + 8)) {
+        this->pushbackNewStateWithMovedPiece(KING, space, space + 8);
+    }
+    if(!this->hasAlly(space - 8)) {
+        this->pushbackNewStateWithMovedPiece(KING, space, space - 8);
+    }
 
 }
 
 void ChessStateManager::generateRookMoves(int space) {
-
+    this->generateVerticalAndHorizontalMovesFor(ROOK, space);
 }
 
 void ChessStateManager::generateQueenMoves(int space) {
-
+    this->generateVerticalAndHorizontalMovesFor(QUEEN, space);
+    this->generateDiagonalMovesFor(QUEEN, space);
 }
 
 void ChessStateManager::generateBishopMoves(int space) {
+    this->generateDiagonalMovesFor(BISHOP, space);
+}
 
+void ChessStateManager::generateVerticalAndHorizontalMovesFor(int piece, int space) {
+    for(int nextSpace = space + 8; nextSpace < 64; nextSpace += 8) {
+        if(this->hasAlly(nextSpace)) {
+            break;
+        }
+
+        this->pushbackNewStateWithMovedPiece(piece, space, nextSpace);
+
+        if(this->hasEnemy(nextSpace)) {
+            break;
+        }
+    }
+
+    for(int nextSpace = space - 8; nextSpace >= 0; nextSpace -= 8) {
+        if(this->hasAlly(nextSpace)) {
+            break;
+        }
+
+        this->pushbackNewStateWithMovedPiece(piece, space, nextSpace);
+
+        if(this->hasEnemy(nextSpace)) {
+            break;
+        }
+    }
+
+    for(int nextSpace = space + 1; this->column(nextSpace) != 0; nextSpace += 1) {
+        if(this->hasAlly(nextSpace)) {
+            break;
+        }
+
+        this->pushbackNewStateWithMovedPiece(piece, space, nextSpace);
+
+        if(this->hasEnemy(nextSpace)) {
+            break;
+        }
+    }
+
+    for(int nextSpace = space - 1; this->column(nextSpace) != 7; nextSpace -= 1) {
+        if(this->hasAlly(nextSpace)) {
+            break;
+        }
+
+        this->pushbackNewStateWithMovedPiece(piece, space, nextSpace);
+
+        if(this->hasEnemy(nextSpace)) {
+            break;
+        }
+    }
+
+}
+
+void ChessStateManager::generateDiagonalMovesFor(int piece, int space) {
+    for(int nextSpace = space + 7; nextSpace < 64 && this->column(nextSpace) != 7; nextSpace += 7) {
+        if(this->hasAlly(nextSpace)) {
+            break;
+        }
+
+        this->pushbackNewStateWithMovedPiece(piece, space, nextSpace);
+
+        if(this->hasEnemy(nextSpace)) {
+            break;
+        }
+    } 
+
+    for(int nextSpace = space + 9; nextSpace < 64 && this->column(nextSpace) != 0; nextSpace += 9) {
+        if(this->hasAlly(nextSpace)) {
+            break;
+        }
+
+        this->pushbackNewStateWithMovedPiece(piece, space, nextSpace);
+
+        if(this->hasEnemy(nextSpace)) {
+            break;
+        }
+    } 
+
+    for(int nextSpace = space - 7; nextSpace >= 0 && this->column(nextSpace) != 0; nextSpace -= 7) {
+        if(this->hasAlly(nextSpace)) {
+            break;
+        }
+
+        this->pushbackNewStateWithMovedPiece(piece, space, nextSpace);
+
+        if(this->hasEnemy(nextSpace)) {
+            break;
+        }
+    } 
+
+    for(int nextSpace = space - 9; nextSpace >= 0 && this->column(nextSpace) != 7; nextSpace -= 9) {
+        if(this->hasAlly(nextSpace)) {
+            break;
+        }
+
+        this->pushbackNewStateWithMovedPiece(piece, space, nextSpace);
+
+        if(this->hasEnemy(nextSpace)) {
+            break;
+        }
+    } 
+}
+
+bool ChessStateManager::isSpaceValid(int space) {
+    return space < 64 && space >= 0;
+}
+
+int ChessStateManager::row(int space) {
+    return space / 8;
+}
+
+int ChessStateManager::column(int space) {
+    return space % 8;
+}
+
+void ChessStateManager::pushbackNewStateWithMovedPiece(int piece, int origin, int destination) {
+    if(!this->isSpaceValid(destination)) return;
+
+    ChessState* newState = this->newStateWithMovedPiece(piece, origin, destination);
+    this->flipEnemyPieces(newState);
+    newState->whitesTurn = !newState->whitesTurn;
+    this->possibleNextStates->push_back(newState);
 }
 
 ChessState* ChessStateManager::newStateWithMovedPiece(int piece, int origin, int destination) {
@@ -142,10 +340,10 @@ ChessState* ChessStateManager::newStateWithMovedPiece(int piece, int origin, int
     }
 
     if(this->whitesTurn()) {
-        newState->whites[piece] = movePieceInBitboard(newState->whites[piece], origin, destination);
+        movePieceInBitboard(newState->whites[piece], origin, destination);
     }
     else {
-        newState->whites[piece] = movePieceInBitboard(newState->whites[piece], origin, destination);
+        movePieceInBitboard(newState->blacks[piece], origin, destination);
     }
 
     return newState;
@@ -163,30 +361,24 @@ void ChessStateManager::clearSpaceInState(ChessState* state, int space) {
 }
 
 void ChessStateManager::removeWhitePieceInState(ChessState* state, int piece, int space) {
-    state->whites[piece] = removePieceInBitboard(state->whites[piece], space);
+    removePieceInBitboard(state->whites[piece], space);
 }
 
 void ChessStateManager::removeBlackPieceInState(ChessState* state, int piece, int space) {
-    state->blacks[piece] = removePieceInBitboard(state->blacks[piece], space);
+    removePieceInBitboard(state->blacks[piece], space);
 }
 
-long long unsigned int ChessStateManager::movePieceInBitboard(long long unsigned int bitboard, int origin, int destination) {
-    bitboard &= ~(1 << origin);
-    bitboard |= (1 << destination);
-
-    return bitboard;
+void ChessStateManager::movePieceInBitboard(long long unsigned int& bitboard, int origin, int destination) {
+    bitboard &= ~(1llu << origin);
+    bitboard |= (1llu << destination);
 }
 
-long long unsigned int ChessStateManager::removePieceInBitboard(long long unsigned int bitboard, int space) {
-    bitboard &= ~(1 << space);
-
-    return bitboard;
+void ChessStateManager::removePieceInBitboard(long long unsigned int& bitboard, int space) {
+    bitboard &= ~(1llu << space);
 }
 
-long long unsigned int ChessStateManager::addPieceInBitboard(long long unsigned int bitboard, int space) {
-    bitboard |= (1 << space);
-
-    return bitboard;
+void ChessStateManager::addPieceInBitboard(long long unsigned int& bitboard, int space) {
+    bitboard |= (1llu << space);
 }
 
 bool ChessStateManager::hasEnemy(int piece, int space) {
@@ -214,11 +406,11 @@ bool ChessStateManager::blacksTurn() {
 }
 
 bool ChessStateManager::hasWhite(int piece, int space) {
-    return (1 << space) && this->currentState->whites[piece];
+    return (1llu << space) & this->currentState->whites[piece];
 }
 
 bool ChessStateManager::hasBlack(int piece, int space) {
-    return (1 << space) && this->currentState->blacks[piece];
+    return (1llu << space) & this->currentState->blacks[piece];
 }
 
 bool ChessStateManager::isEmpty(int space) {
@@ -234,11 +426,11 @@ bool ChessStateManager::hasPiece(int piece, int space) {
 }
 
 bool ChessStateManager::hasWhite(int space) {
-    return (1 << space && this->whitesBitboard);
+    return (1llu << space & this->whitesBitboard);
 }
 
 bool ChessStateManager::hasBlack(int space) {
-    return (1 << space && this->blacksBitboard);
+    return (1llu << space & this->blacksBitboard);
 }
 
 int ChessStateManager::getEnemyPieceInSpace(ChessState* state, int space) {
@@ -325,6 +517,11 @@ void ChessStateManager::generateBlacksBitboard() {
     this->blacksBitboard = bitboard;
 }
 
+
+void ChessStateManager::display(GameState* state) {
+    ChessStateManager::display(static_cast<ChessState*>(state));
+}
+
 void ChessStateManager::display(ChessState* state) {
     ChessStateManager* manager = new ChessStateManager(state);
     manager->display();
@@ -393,7 +590,7 @@ char ChessStateManager::getBlackDisplayCharacter(int space) {
     else if(hasBlack(QUEEN, space)) {
         return 'q';
     }
-    else if(hasAlly(KING, space)) {
+    else if(hasBlack(KING, space)) {
         return 'k';
     }
 

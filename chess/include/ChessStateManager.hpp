@@ -7,6 +7,7 @@
 class ChessStateManager {
 public:
     ChessStateManager(ChessState* state);
+    ChessStateManager(GameState* state);
     virtual ~ChessStateManager();
 
     static ChessState* generateStartingState();
@@ -14,6 +15,7 @@ public:
     static ChessState* getEmptyState();
     void display();
     static void display(ChessState* state);
+    static void display(GameState* state);
 private:    
     bool whitesTurn();
     bool blacksTurn();
@@ -47,18 +49,25 @@ private:
     void generateQueenMoves(int space);
     void generateBishopMoves(int space);
     void generateKnightMoves(int space);
+    void generateVerticalAndHorizontalMovesFor(int piece, int space);
+    void generateDiagonalMovesFor(int piece, int space);
 
+    void pushbackNewStateWithMovedPiece(int piece, int origin, int destination);
     ChessState* newStateWithMovedPiece(int piece, int origin, int destination);
-    long long unsigned int movePieceInBitboard(long long unsigned int bitboard, int origin, int destination);
-    long long unsigned int removePieceInBitboard(long long unsigned int bitboard, int space);
-    long long unsigned int addPieceInBitboard(long long unsigned int bitboard, int space);
+    void movePieceInBitboard(long long unsigned int& bitboard, int origin, int destination);
+    void removePieceInBitboard(long long unsigned int& bitboard, int space);
+    void addPieceInBitboard(long long unsigned int& bitboard, int space);
     void clearSpaceInState(ChessState* state, int space);
     void removeWhitePieceInState(ChessState* state, int piece, int space);
     void removeBlackPieceInState(ChessState* state, int piece, int space);
+    int row(int space);
+    int column(int space);
+    bool isSpaceValid(int space);
 
     void flipEnemyPieces();
-    void flipWhitePieces();
-    void flipBlackPieces();
+    void flipEnemyPieces(ChessState* state);
+    void flipWhitePieces(ChessState* state);
+    void flipBlackPieces(ChessState* state);
     long long unsigned int flipLongLongUnsigned(long long unsigned int n);
 
     char getSpaceDisplayCharacter(int space);
