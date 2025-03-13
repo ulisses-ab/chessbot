@@ -103,7 +103,7 @@ void ChessStateManager::generatePossibleMovesFromSpace(int space) {
 }
 
 void ChessStateManager::generatePawnMoves(int space) {
-
+    
 }
 
 bool ChessStateManager::hasEnemy(int piece, int space) {
