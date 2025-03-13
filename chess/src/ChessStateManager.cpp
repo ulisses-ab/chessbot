@@ -6,7 +6,6 @@ ChessStateManager::ChessStateManager(GameState* state) {
     ChessStateManager(static_cast<ChessState*>(state));
 }
 
-
 ChessStateManager::ChessStateManager(ChessState* state) {
     this->currentState = new ChessState();
     *this->currentState = *state;
@@ -43,7 +42,6 @@ void ChessStateManager::flipWhitePieces(ChessState* state) {
         pieces = this->flipLongLongUnsigned(pieces);
     }
 }
-
 
 long long unsigned int ChessStateManager::flipLongLongUnsigned(long long unsigned int n) {
     long long unsigned int temp = 0;
@@ -516,7 +514,6 @@ void ChessStateManager::generateBlacksBitboard() {
 
     this->blacksBitboard = bitboard;
 }
-
 
 void ChessStateManager::display(GameState* state) {
     ChessStateManager::display(static_cast<ChessState*>(state));
