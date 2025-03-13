@@ -6,7 +6,7 @@
 
 class ChessStateManager {
 public:
-    ChessStateManager(ChessState* gameState);
+    ChessStateManager(ChessState* state);
     virtual ~ChessStateManager();
 
     static ChessState* generateStartingState();
@@ -32,7 +32,7 @@ private:
     bool hasPiece(int space);
     bool hasPiece(int piece, int space);
 
-    int getAllyyPieceInSpace(ChessState* state, int space);
+    int getAllyPieceInSpace(ChessState* state, int space);
     int getEnemyPieceInSpace(ChessState* state, int space);
     int getBlackPieceInSpace(ChessState* state, int space);
     int getWhitePieceInSpace(ChessState* state, int space);

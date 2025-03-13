@@ -1,10 +1,8 @@
 #include "../include/ChessStateManager.hpp"
 #include <algorithm>
-#include "ChessState.hpp"
 #include <iostream>
 
-ChessStateManager::ChessStateManager(ChessState* gameState) {
-    ChessState* state = static_cast<ChessState*>(gameState);
+ChessStateManager::ChessStateManager(ChessState* state) {
     this->currentState = new ChessState();
     *this->currentState = *state;
     this->flipEnemyPieces();
@@ -115,6 +113,26 @@ void ChessStateManager::generatePawnMoves(int space) {
     }
 }
 
+void ChessStateManager::generateKnightMoves(int space) {
+
+}
+
+void ChessStateManager::generateKingMoves(int space) {
+
+}
+
+void ChessStateManager::generateRookMoves(int space) {
+
+}
+
+void ChessStateManager::generateQueenMoves(int space) {
+
+}
+
+void ChessStateManager::generateBishopMoves(int space) {
+
+}
+
 ChessState* ChessStateManager::newStateWithMovedPiece(int piece, int origin, int destination) {
     ChessState* newState = new ChessState();
     *newState = *(this->currentState);
@@ -199,7 +217,7 @@ bool ChessStateManager::hasWhite(int piece, int space) {
     return (1 << space) && this->currentState->whites[piece];
 }
 
-bool ChessStateManager::hasWhite(int piece, int space) {
+bool ChessStateManager::hasBlack(int piece, int space) {
     return (1 << space) && this->currentState->blacks[piece];
 }
 
@@ -221,6 +239,70 @@ bool ChessStateManager::hasWhite(int space) {
 
 bool ChessStateManager::hasBlack(int space) {
     return (1 << space && this->blacksBitboard);
+}
+
+int ChessStateManager::getEnemyPieceInSpace(ChessState* state, int space) {
+    if(this->whitesTurn()) {
+        return this->getBlackPieceInSpace(state, space);
+    }
+    else {
+        return this->getWhitePieceInSpace(state, space);
+    }
+}
+
+int ChessStateManager::getAllyPieceInSpace(ChessState* state, int space) {
+    if(this->blacksTurn()) {
+        return this->getBlackPieceInSpace(state, space);
+    }
+    else {
+        return this->getWhitePieceInSpace(state, space);
+    }
+}
+
+int ChessStateManager::getWhitePieceInSpace(ChessState* state, int space) {
+    if(this->hasWhite(PAWN, space)) {
+        return PAWN;
+    }
+    else if(this->hasWhite(KNIGHT, space)) {
+        return KNIGHT;
+    }
+    else if(this->hasWhite(BISHOP, space)) {
+        return BISHOP;
+    }
+    else if(this->hasWhite(ROOK, space)) {
+        return ROOK;
+    }
+    else if(this->hasWhite(QUEEN, space)) {
+        return QUEEN;
+    }
+    else if(this->hasWhite(KING, space)) {
+        return KING;
+    }
+
+    return -1;
+}
+
+int ChessStateManager::getBlackPieceInSpace(ChessState* state, int space) {
+    if(this->hasBlack(PAWN, space)) {
+        return PAWN;
+    }
+    else if(this->hasBlack(KNIGHT, space)) {
+        return KNIGHT;
+    }
+    else if(this->hasBlack(BISHOP, space)) {
+        return BISHOP;
+    }
+    else if(this->hasBlack(ROOK, space)) {
+        return ROOK;
+    }
+    else if(this->hasBlack(QUEEN, space)) {
+        return QUEEN;
+    }
+    else if(this->hasBlack(KING, space)) {
+        return KING;
+    }
+
+    return -1;
 }
 
 void ChessStateManager::generateWhitesBitboard() {
