@@ -1,9 +1,9 @@
-#include "../../minimax/include/Evaluator.hpp"
+#include "ChessState.hpp"
 
 #ifndef CHESSEVALUATOR_H
 #define CHESSEVALUATOR_H
 
-class ChessEvaluator : public Evaluator {
+class ChessEvaluator {
 public:
     double evaluateState(GameState* state);
 };

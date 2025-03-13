@@ -19,7 +19,6 @@ private:
     double evaluateNextStates(GameState* state, int depth, double alpha, double beta, bool isMaximizing);
 
     double evaluateState(GameState* state);
-    bool isTerminalState(GameState* state);
     std::vector<GameState*>* generatePossibleNextStates(GameState* state);
     void deleteStateVector(std::vector<GameState*>* stateVector);
     

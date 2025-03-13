@@ -4,12 +4,12 @@
 #define CHESSESTATE_H
 
 enum Pieces {
-    PAWNS,
-    BISHOPS,
-    KNIGHTS,
-    ROOKS,
-    QUEENS,
-    KINGS
+    PAWN,
+    BISHOP,
+    KNIGHT,
+    ROOK,
+    QUEEN,
+    KING
 };
 
 struct ChessState : public GameState {

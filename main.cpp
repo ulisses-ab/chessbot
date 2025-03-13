@@ -1,7 +1,9 @@
-#include "chess/include/ChessInterface.hpp"
+#include "chess/include/ChessStateManager.hpp"
 
 int main() {
-    ChessInterface* ci = new ChessInterface();
+    ChessState* cs = ChessStateManager::generateStartingState();
 
-    delete ci;
+    ChessStateManager::display(cs);
+
+    
 }

@@ -1,6 +1,4 @@
 #include "GameState.hpp"
-#include "Evaluator.hpp"
-#include "StateManager.hpp"
 #include <vector>
 
 #ifndef GAMEINTERFACE_H
@@ -8,16 +6,9 @@
 
 class GameInterface {
 public:
-    GameInterface(Evaluator* evaluator, StateManager* moveGenerator);
-    virtual ~GameInterface();
-
-    double evaluateState(GameState* state);
-    bool isTerminalState(GameState* state);
-    std::vector<GameState*>* generatePossibleNextStates(GameState* state);
-    GameState* getEmptyState();
-private:
-    Evaluator* evaluator;
-    StateManager* stateManager;
+    virtual double evaluateState(GameState* state) = 0;
+    virtual std::vector<GameState*>* generatePossibleNextStates(GameState* state) = 0;
+    virtual GameState* getEmptyState() = 0;
 };
 
 #endif

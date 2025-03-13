@@ -33,11 +33,16 @@ double Minimax::min(GameState* state, int depth, double alpha, double beta) {
 }
 
 double Minimax::max(GameState* state, int depth, double alpha, double beta, GameState* bestState) {
-    if (depth == 0 || this->isTerminalState(state)) {
+    if (depth == 0) {
         return this->evaluateState(state);
     }
 
     std::vector<GameState*>* possibleNextStates = this->generatePossibleNextStates(state);
+
+    if (possibleNextStates->size() == 0) {
+        return this->evaluateState(state);
+    }
+
     double maxEvaluation = -DBL_MAX;
     GameState* maxState;
 
@@ -61,12 +66,17 @@ double Minimax::max(GameState* state, int depth, double alpha, double beta, Game
     return maxEvaluation;
 }
 
-double Minimax::min(GameState* gameState, int depth, double alpha, double beta, GameState* bestState) {
-    if (depth == 0 || this->isTerminalState(gameState)) {
-        return this->evaluateState(gameState);
+double Minimax::min(GameState* state, int depth, double alpha, double beta, GameState* bestState) {
+    if (depth == 0) {
+        return this->evaluateState(state);
     }
 
-    std::vector<GameState*>* possibleNextStates = this->gameInterface->generatePossibleNextStates(gameState);
+    std::vector<GameState*>* possibleNextStates = this->gameInterface->generatePossibleNextStates(state);
+
+    if (possibleNextStates->size() == 0) {
+        return this->evaluateState(state);
+    }
+
     double minEvaluation = DBL_MAX;
     GameState* minState;
 
@@ -92,10 +102,6 @@ double Minimax::min(GameState* gameState, int depth, double alpha, double beta, 
 
 std::vector<GameState*>* Minimax::generatePossibleNextStates(GameState* state) {
     return this->gameInterface->generatePossibleNextStates(state);
-}
-
-bool Minimax::isTerminalState(GameState* state) {
-    return this->gameInterface->isTerminalState(state);
 }
 
 double Minimax::evaluateState(GameState* state) {
